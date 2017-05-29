@@ -13,7 +13,7 @@ let router = new Router({
   routes: [
     {
       path: '/',
-      components: IndexPage
+      component: IndexPage
     }
   ]
 })
