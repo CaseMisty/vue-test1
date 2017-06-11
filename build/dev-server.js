@@ -21,6 +21,7 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
+// var jsonServer = new jsonServer()
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
@@ -61,6 +62,41 @@ app.use(hotMiddleware)
 // serve pure static assets
 var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsSubDirectory)
 app.use(staticPath, express.static('./static'))
+
+// 对jsonServer的配置
+/*var jsonServer = require('json-server')
+var apiServer = jsonServer.create()
+var apiRouter = jsonServer.router('db.json')
+var middleware = jsonServer.defaults()
+apiServer.use(middleware)
+*/
+
+// 另一种本地假数据配置方法
+var apiServer = express()
+var bodyParser = require('body-parser')
+apiServer.use(bodyParser.urlencoded({extended: true}))
+apiServer.use(bodyParser.json())
+var apiRouter = express.Router()
+var fs = require('fs')
+apiRouter.get('/', function(req, res) {
+  res.json({message: 'hooray! welcome to our api!'})
+})
+apiRouter.route('/:apiName')
+.all(function (req, res) {
+  fs.readFile('./db.json', 'utf8', function (err, data) {
+    if (err) throw err
+    var data = JSON.parse(data)
+    if (data[req.params.apiName]) {
+      res.json(data[req.params.apiName])
+    } else {
+      res.send('no such api name')
+    }
+  })
+})
+apiServer.use('/api', apiRouter)
+apiServer.listen(port + 1, function () {
+  console.log('JSON Server is running.')
+})
 
 var uri = 'http://localhost:' + port
 
