@@ -24,14 +24,10 @@
       </div>
     </div>
     <div class="index-right">
-      <slide :slides="slides"></slide>
+      <slide :slideNews="slideNews" :inv="slideSpeed"></slide>
       <div class="index-board-list">
-        <div
-          class="index-board-item" 
-          v-for="(item, index) in boardList"
-          :class="[{'line-last': index % 2},
-          'index-board-' + item.id]"
-        >
+        <div class="index-board-item" v-for="(item, index) in boardList" :class="[{'line-last': index % 2},
+            'index-board-' + item.id]">
           <div class="index-board-item-inner">
             <h2>{{item.title}}</h2>
             <p>{{item.description}}</p>
@@ -40,6 +36,7 @@
             </div>
           </div>
         </div>
+        <button @click="show">show This</button>
       </div>
     </div>
   </div>
@@ -51,39 +48,37 @@ export default {
   components: {
     Slide
   },
+  methods: {
+    show () {
+      console.log(`这里是show方法`)
+      console.log('newsList:')
+      console.dir(this.newsList)
+      console.log('slideNews:')
+      console.dir(this.slideNews)
+    },
+    showThis () {
+      console.dir(this)
+    }
+  },
   // 创建完毕之后
-  created: function () {
-    this.$http.post('api/getNewsList')
-    .then((data) => {
-      this.newsList = data.data
-    }, (err) => {
-      console.log(err)
-    })
+  created () {
+    this.$http.get('api/getNewsList')
+      .then((response) => {
+        this.newsList = response.data
+      }, (err) => {
+        console.log(err)
+      })
+    this.$http.get('api/getSlideNews')
+      .then((response) => {
+        this.slideNews = response.data
+        // console.dir(response.data)
+      }, (err) => {
+        console.dir(err)
+      })
   },
   data () {
     return {
-      slides: [
-        {
-          title: '《星战前线2》新实机演示 后续DLC全免费',
-          href: 'http://www.gamersky.com/news/201706/914531.shtml',
-          src: 'http://image.gamersky.com/gameshd/2017/20170611_wyc_246_5.jpg'
-        },
-        {
-          title: 'EA新作《逃出生天》公布 兄弟合作逃狱',
-          href: 'http://www.gamersky.com/news/201706/914498.shtml',
-          src: 'http://image.gamersky.com/gameshd/2017/20170611_wyc_246_3.jpg'
-        },
-        {
-          title: '《极品飞车20》实机演示 劲爆飙车场面',
-          href: 'http://www.gamersky.com/news/201706/914500.shtml',
-          src: 'http://image.gamersky.com/gameshd/2017/20170611_wyc_246_2.jpg'
-        },
-        {
-          title: 'BF1俄国DLC宣传片 冰天雪地残酷大战',
-          href: 'http://www.gamersky.com/news/201706/914536.shtml',
-          src: 'http://image.gamersky.com/gameshd/2017/20170611_wyc_246_1.jpg'
-        }
-      ],
+      slideSpeed: 3,
       productList: {
         pc: {
           title: 'pc产品',
@@ -131,6 +126,7 @@ export default {
         }
       },
       newsList: [],
+      slideNews: [],
       boardList: [
         {
           title: '开放产品',
@@ -172,43 +168,54 @@ export default {
   margin: 0 auto;
   overflow: hidden;
 }
+
 .index-left {
   float: left;
   width: 300px;
   text-align: left;
 }
+
 .index-right {
   float: left;
   width: 900px;
+  padding-top: 15px;
 }
+
 .index-left-block {
   margin: 15px;
   background: #fff;
   box-shadow: 0 0 1px #ddd;
 }
+
 .index-left-block .hr {
   margin-bottom: 20px;
 }
+
 .index-left-block h2 {
   background: #4fc08d;
   color: #fff;
   padding: 10px 15px;
   margin-bottom: 20px;
 }
+
 .index-left-block h3 {
   padding: 0 15px 5px 15px;
   font-weight: bold;
   color: #222;
 }
+
 .index-left-block ul {
   padding: 10px 15px;
 }
+
 .index-left-block li {
   padding: 5px;
 }
+
 .index-board-list {
   overflow: hidden;
 }
+
 .index-board-item {
   float: left;
   width: 400px;
@@ -218,41 +225,52 @@ export default {
   margin-right: 20px;
   margin-bottom: 20px;
 }
+
 .index-board-item-inner {
   min-height: 125px;
   padding-left: 120px;
 }
-.index-board-car .index-board-item-inner{
+
+.index-board-car .index-board-item-inner {
   background: url(../assets/images/car.png) no-repeat;
 }
-.index-board-loud .index-board-item-inner{
+
+.index-board-loud .index-board-item-inner {
   background: url(../assets/images/earth.png) no-repeat;
 }
-.index-board-earth .index-board-item-inner{
+
+.index-board-earth .index-board-item-inner {
   background: url(../assets/images/hill.png) no-repeat;
 }
-.index-board-hill .index-board-item-inner{
+
+.index-board-hill .index-board-item-inner {
   background: url(../assets/images/loud.png) no-repeat;
 }
+
 .index-board-item h2 {
   font-size: 18px;
   font-weight: bold;
   color: #000;
   margin-bottom: 15px;
 }
+
 .line-last {
   margin-right: 0;
 }
+
 .index-board-button {
   margin-top: 20px;
 }
+
 .lastest-news {
   min-height: 512px;
 }
+
 .hot-tag {
   background: red;
   color: #fff;
 }
+
 .new-item {
   display: inline-block;
   width: 230px;
@@ -260,6 +278,7 @@ export default {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .hot {
   color: #d9502d;
 }
