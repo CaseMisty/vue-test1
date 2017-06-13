@@ -36,7 +36,7 @@
             </div>
           </div>
         </div>
-        <button @click="show">show This</button>
+        <button @click="show"> {{hintText}} </button>
       </div>
     </div>
   </div>
@@ -55,9 +55,6 @@ export default {
       console.dir(this.newsList)
       console.log('slideNews:')
       console.dir(this.slideNews)
-    },
-    showThis () {
-      console.dir(this)
     }
   },
   // 创建完毕之后
@@ -78,7 +75,8 @@ export default {
   },
   data () {
     return {
-      slideSpeed: 3,
+      hintText: 'showThis',
+      slideSpeed: 4,
       productList: {
         pc: {
           title: 'pc产品',

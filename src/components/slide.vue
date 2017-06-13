@@ -12,36 +12,36 @@
     img {
       @include slideSize($s-width, $s-height);
     }
-    ul {
-      li {
-        list-style: none;
-        .title {
-          position: absolute;
-          padding: 0 15px;
-          width: auto;
-          bottom: 0px;
-          $height: 52px;
-          height: $height;
-          line-height: $height;
-          font: {
-            size: 21px;
-            family: 'Microsoft YaHei';
-            weight: bold;
-          }
-          color: #fff;
-          &:hover {
-            color: $blue;
-          }
+    .img-box {
+      list-style: none;
+      .title {
+        position: absolute;
+        // padding: 0 15px;
+        text-indent: 15px;
+        width: $s-width;
+        bottom: 0px;
+        $height: 52px;
+        height: $height;
+        line-height: $height;
+        background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+        font: {
+          size: 21px;
+          family: 'Microsoft YaHei';
+          weight: bold;
+        }
+        color: #fff;
+        &:hover {
+          color: $blue;
         }
       }
     }
+    
     .switch-bar {
       padding: 15px;
       position: absolute;
       right: 0;
       bottom: 5px;
       .switch-btn {
-        transition: width 0.3s;
         $rect: 10px;
         width: $rect;
         height: $rect;
@@ -95,25 +95,28 @@
 
 <template>
   <div class="slide" v-if="slideNews.length" @mouseenter="clearInv" @mouseleave="runInv">
-    <ul>
-      <li>
-        <a :href="slideNews[nowIndex].href" target="_blank">
-          <transitoion name="slide-trans">
-            <img v-if="isShow" :src="slideNews[nowIndex].src" alt="">
-            <div v-if="isShow" class="title"> {{slideNews[nowIndex].title}} </div>
-          </transitoion>
-          <transitoion name="slide-trans-old">
-            <img v-if="!isShow" :src="slideNews[nowIndex].src" alt="">
-            <div v-if="!isShow" class="title"> {{slideNews[nowIndex].title}} </div>
-          </transitoion>
-        </a>
-      </li>
-    </ul>
+    <div class="img-box" style="overflow: hidden">
+      <a target="_blank" 
+      :href="slideNews[nowIndex].href" 
+      :style="oldImgStyle" id='faq'>
+        <!--<img 
+        v-if="showLeft"
+        :src="slideNews[prevIndex].src"
+        :alt="slideNews[prevIndex].title">-->
+        <img 
+        :src="slideNews[nowIndex].src"  
+        :alt="slideNews[nowIndex].title">
+        <!--<img 
+        v-if="showRight"
+        src="" alt="">-->
+        <div class="title"> {{slideNews[nowIndex].title}} </div>
+      </a>
+    </div>
     <div class="switch-bar">
       <span class="switch-btn" v-for="(item, index) of slideNews" :class="{cur: index === nowIndex}" @click="goto(index)"></span>
     </div>
-    <span name="prev-btn" @click="goto(prevIndex)"></span>
-    <span name="next-btn" @click="goto(nextIndex)"></span>
+    <span name="prev-btn" @click="goto(prevIndex, 'right')"></span>
+    <span name="next-btn" @click="goto(nextIndex, 'left')"></span>
   </div>
 </template>
 
@@ -132,7 +135,14 @@ export default {
   data () {
     return {
       nowIndex: 0,
-      isShow: true
+      showLeft: false,
+      showRight: false,
+      duration: 0.3, // 左右移动的动画时间 (s)
+      oldImgStyle: {
+        transition: '0.3s',
+        // transform: 'translateX(500px)',
+        display: 'block'
+      }
     }
   },
   computed: {
@@ -152,8 +162,20 @@ export default {
     }
   },
   methods: {
-    goto (index) {
+    goto (index, position) {
+      let oldIndex = this.nowIndex
       this.nowIndex = index
+      if (!position) {
+        if (index > oldIndex) position = 'left'
+        else position = 'right'
+      }
+      // window.alert(position)
+      if (position === 'left') {
+        this.oldImgStyle.transform = 'translateX(700px)'
+      }
+      if (position === 'right') {
+        this.oldImgStyle.transform = 'translateX(-700px)'
+      }
     },
     runInv () {
       this.invId = setInterval(() => {
