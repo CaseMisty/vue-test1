@@ -20,8 +20,6 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-var app = express()
-// var jsonServer = new jsonServer()
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
@@ -64,7 +62,9 @@ var staticPath = path.posix.join(config.dev.assetsPublicPath, config.dev.assetsS
 app.use(staticPath, express.static('./static'))
 
 // 对jsonServer的配置
-/*var jsonServer = require('json-server')
+/*
+var app = express()
+var jsonServer = require('json-server')
 var apiServer = jsonServer.create()
 var apiRouter = jsonServer.router('db.json')
 var middleware = jsonServer.defaults()

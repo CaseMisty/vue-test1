@@ -8,12 +8,16 @@
   }
   .slide {
     position: relative;
+    overflow: hidden;
     @include slideSize($s-width, $s-height);
     img {
       @include slideSize($s-width, $s-height);
     }
     .img-box {
-      list-style: none;
+      a{
+        float: left;
+        position: absolute;
+      }
       .title {
         position: absolute;
         // padding: 0 15px;
@@ -91,25 +95,40 @@
       }
     }
   }
+  #prev {
+    left: -$s-width;
+  }
+  #next {
+    left: $s-width;
+  }
 </style>
 
 <template>
   <div class="slide" v-if="slideNews.length" @mouseenter="clearInv" @mouseleave="runInv">
-    <div class="img-box" style="overflow: hidden">
-      <a target="_blank" 
+    <div class="img-box">
+      <a target="_blank" id="prev"
+      :href="slideNews[prevIndex].href" 
+      :style="">
+        <img 
+        :src="slideNews[prevIndex].src"  
+        :alt="slideNews[prevIndex].title">
+        <div class="title"> {{slideNews[prevIndex].title}} </div>
+      </a>
+      <a target="_blank" id="now"
       :href="slideNews[nowIndex].href" 
-      :style="oldImgStyle" id='faq'>
-        <!--<img 
-        v-if="showLeft"
-        :src="slideNews[prevIndex].src"
-        :alt="slideNews[prevIndex].title">-->
+      :style="nowImgStyle">
         <img 
         :src="slideNews[nowIndex].src"  
         :alt="slideNews[nowIndex].title">
-        <!--<img 
-        v-if="showRight"
-        src="" alt="">-->
         <div class="title"> {{slideNews[nowIndex].title}} </div>
+      </a>
+      <a target="_blank" id="next"
+      :href="slideNews[nextIndex].href" 
+      :style="" >
+        <img 
+        :src="slideNews[nextIndex].src"  
+        :alt="slideNews[nextIndex].title">
+        <div class="title"> {{slideNews[nextIndex].title}} </div>
       </a>
     </div>
     <div class="switch-bar">
@@ -138,9 +157,7 @@ export default {
       showLeft: false,
       showRight: false,
       duration: 0.3, // 左右移动的动画时间 (s)
-      oldImgStyle: {
-        transition: '0.3s',
-        // transform: 'translateX(500px)',
+      nowImgStyle: {
         display: 'block'
       }
     }
@@ -170,21 +187,26 @@ export default {
         else position = 'right'
       }
       // window.alert(position)
-      if (position === 'left') {
-        this.oldImgStyle.transform = 'translateX(700px)'
-      }
-      if (position === 'right') {
-        this.oldImgStyle.transform = 'translateX(-700px)'
-      }
-    },
-    runInv () {
+      this.nowImgStyle.transitionDuration = this.duration + 's'
+      // if (position === 'left') {
+      //   this.nowImgStyle.transform = 'translateX(-700px)'
+      // }
+      // if (position === 'right') {
+      //   this.nowImgStyle.transform = 'translateX(700px)'
+      // }
+      setTimeout(() => {
+        this.nowImgStyle.transform = 'translateX(-700px)'
+        console.dir(this.nowImgStyle.transform)
+      }, this.duration * 1000)
+    }
+  /*  runInv () {
       this.invId = setInterval(() => {
         this.goto(this.nextIndex)
       }, this.inv * 1000)
-    },
-    clearInv () {
+    }, */
+   /* clearInv () {
       clearInterval(this.invId)
-    }
+    } */
   },
   mounted () {
     this.runInv()
